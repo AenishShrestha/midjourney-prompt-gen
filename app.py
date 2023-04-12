@@ -1,24 +1,19 @@
-import random
-import re
 import streamlit as st
 from transformers import pipeline, set_seed
+import random
+import re
 
 gpt2_pipe = pipeline('text-generation', model='succinctly/text2image-prompt-generator')
-
-# with open("name.txt", "r") as f:
-#     line = f.readlines()
-
 
 def generate(starting_text):
     for count in range(6):
         seed = random.randint(100, 1000000)
         set_seed(seed)
     
-        # If the text field is empty
         if starting_text == "":
             starting_text: str = line[random.randrange(0, len(line))].replace("\n", "").lower().capitalize()
             starting_text: str = re.sub(r"[,:\-–.!;?_]", '', starting_text)
-            st.write(starting_text)
+            print(starting_text)
     
         response = gpt2_pipe(starting_text, max_length=random.randint(60, 90), num_return_sequences=8)
         response_list = []
@@ -35,20 +30,15 @@ def generate(starting_text):
         if count == 5:
             return response_end
 
-txt = st.text_input("English")
-out = st.text_area("Generated Text", height=300)
-examples = [["mythology of the Slavs"], ["All-seeing eye monitors these world"], ["astronaut dog"],
-            ["A monochrome forest of ebony trees"], ["sad view of worker in office,"],
-            ["Headshot photo portrait of John Lennon"], ["wide field with thousands of blue nemophila,"]]
-st.sidebar.header("Examples")
-ex_choice = st.sidebar.selectbox("Select an example:", examples)
+st.set_page_config(page_title="Midjourney Prompt Generator", page_icon=":rocket:", layout="centered")
+st.title("Midjourney Prompt Generator")
+st.subheader("This is an unofficial demo for Midjourney Prompt Generator. To use it, simply send your text, or click one of the examples to load them. Read more at the links below.")
+st.write("Model: [Hugging Face](https://huggingface.co/succinctly/text2image-prompt-generator)")
+st.write("Telegram bot: [Prompt Generator Bot](https://t.me/prompt_generator_bot)")
+st.write("[![](https://img.shields.io/twitter/follow/DoEvent?label=@DoEvent&style=social)](https://twitter.com/DoEvent)")
 
-if ex_choice:
-    txt = ex_choice[0]
-
+starting_text = st.text_input("English", "English Text here")
 if st.button("Generate"):
-    out_text = generate(txt)
-    out.text = ""
-    if out_text:
-        for i in range(len(out_text.splitlines())):
-            out.write(out_text.splitlines()[i])
+    generated_text = generate(starting_text)
+    st.write("Generated Text:")
+    st.write(generated_text)
